@@ -1,33 +1,51 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
+import { NavbarContext } from "../../context/NavContext";
+
 
 const FullScreenNav = () => {
 
   const fullNavLinkRef = useRef(null)
-  useGSAP(function () {
-      const tl = gsap.timeline();
+  const fullScreenRef = useRef(null)
+
+  const [navOpen, setNavOpen] = useContext(NavbarContext)
+  console.log(navOpen); 
+
+  function gsapAnimation() {
+    const tl = gsap.timeline();
       tl.from(".stairing", {
-        delay:1,
+        delay:0.5,
         height: 0,
         stagger: {
           amount: -0.2,
-        },
+        }
       });
-      tl.from(fullNavLinkRef.current,{
-        opacity:0
-      })
       tl.from('.link',{
         opacity:0,
         rotateX:90,
         stagger: {
           amount: 0.2,
-        },
+        }
+      })  
+  }
+
+  useGSAP(function(){
+    if(navOpen){
+      gsap.to('fullscreennav',{
+        display:'block'
       })
-    });
+      gsapAnimation()
+    }else{
+      gsap.to('.fullscreennav',{
+        display:'none'
+      })
+    }
+  },[navOpen])
+  
 
   return (
-    <div id="fullScreenNav" className="text-white h-screen overflow-hidden  w-full absolute ">
+    <div ref={fullScreenRef} id="fullScreenNav" className=" text-white h-screen overflow-hidden z-50  w-full absolute ">
       <div className="h-screen w-full fixed">
         <div  className="h-full w-full flex">
           <div className="stairing h-full w-1/5 bg-red-800"></div>
@@ -47,7 +65,9 @@ const FullScreenNav = () => {
         </div>
         </div>
 
-        <div className="w-32 h-32 relative cursor-pointer ">
+        <div onClick={() => {
+          setNavOpen(false)
+        }} className="w-32 h-32 relative cursor-pointer ">
         <div className="h-44 w-1 -rotate-45 origin-top absolute bg-[#d3fd50]"></div>
         <div className="h-44 w-1 right-0 rotate-45 origin-top absolute bg-[#d3fd50]"></div>
         </div>
